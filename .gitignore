@@ -1,19 +1,21 @@
-# Node modules (recursive)
+# Node modules (workspace-aware, recursive)
 **/node_modules/
 
-# Build outputs (recursive)
+# Build outputs
 **/dist/
 **/build/
 *.tsbuildinfo
 
-# Env files
+# Environment variables
 .env
 **/.env
 .env.*.local
 
-# Prisma generated DBs or config
+# Prisma
 **/prisma/.env
 *.db
+# Local Prisma clients (per-service)
+apps/*/generated/
 
 # Logs
 logs/
@@ -21,7 +23,7 @@ logs/
 npm-debug.log*
 pnpm-debug.log*
 
-# Editor + OS
+# Editor/OS
 .vscode/
 .DS_Store
 
@@ -29,8 +31,5 @@ pnpm-debug.log*
 **/.docker/
 docker-compose.override.yml
 
-# Lockfiles (ignore only in services)
+# Lockfiles (ignore only in workspaces)
 apps/*/pnpm-lock.yaml
-
-# Ignore generated Prisma client
-**/generated/
