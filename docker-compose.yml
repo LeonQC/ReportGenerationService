@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  postgres-report:
+    image: postgres:15
+    container_name: postgres-report
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${REPORT_DB_USER}
+      POSTGRES_PASSWORD: ${REPORT_DB_PASSWORD}
+      POSTGRES_DB: ${REPORT_DB_NAME}
+    volumes:
+      - pgdata-report:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+
+  postgres-auth:
+    image: postgres:15
+    container_name: postgres-auth
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+      POSTGRES_DB: ${AUTH_DB_NAME}
+    volumes:
+      - pgdata-auth:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+
+volumes:
+  pgdata-report:
+  pgdata-auth:
+  pgadmin-data:
