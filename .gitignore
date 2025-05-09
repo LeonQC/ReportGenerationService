@@ -1,24 +1,35 @@
-# Compiled class file
-*.class
+# Node modules (workspace-aware, recursive)
+**/node_modules/
 
-# Log file
+# Build outputs
+**/dist/
+**/build/
+*.tsbuildinfo
+
+# Environment variables
+.env
+**/.env
+.env.*.local
+
+# Prisma
+**/prisma/.env
+*.db
+# Local Prisma clients (per-service)
+apps/*/generated/
+
+# Logs
+logs/
 *.log
+npm-debug.log*
+pnpm-debug.log*
 
-# BlueJ files
-*.ctxt
+# Editor/OS
+.vscode/
+.DS_Store
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Docker
+**/.docker/
+docker-compose.override.yml
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# Lockfiles (ignore only in workspaces)
+apps/*/pnpm-lock.yaml
