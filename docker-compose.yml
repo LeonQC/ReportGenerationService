@@ -14,20 +14,6 @@ services:
     networks:
       - microservices-net
 
-  postgres-auth:
-    image: postgres:15
-    container_name: postgres-auth
-    ports:
-      - "5434:5432"
-    environment:
-      POSTGRES_USER: ${AUTH_DB_USER}
-      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
-      POSTGRES_DB: ${AUTH_DB_NAME}
-    volumes:
-      - pgdata-auth:/var/lib/postgresql/data
-    networks:
-      - microservices-net
-
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -47,5 +33,4 @@ networks:
 
 volumes:
   pgdata-report:
-  pgdata-auth:
   pgadmin-data:
