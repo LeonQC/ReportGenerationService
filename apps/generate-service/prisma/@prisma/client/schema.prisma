@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "@prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ReportRequest {
+  id            String       @id @default(uuid())
+  userId        String // passed from Auth service or Gateway
+  reportType    ReportType // e.g., "stock_summary", "macro_trends"
+  timeRange     TimeRange // e.g., "today", "last_7_days"
+  mimeType      MimeType // e.g., "application/pdf", "text/csv"
+  customRequest String? // optional free-form user input
+  status        ReportStatus @default(PENDING)
+  outputUrl     String? // file location (e.g., S3 or CDN)
+  errorMessage  String? // if generation fails
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum ReportType {
+  STOCK_SUMMARY
+  MACRO_TRENDS
+  CUSTOM
+}
+
+enum TimeRange {
+  TODAY
+  LAST_7_DAYS
+  LAST_30_DAYS
+}
+
+enum MimeType {
+  APPLICATION_PDF
+  TEXT_CSV
+  APPLICATION_JSON
+}
+
+enum ReportStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
