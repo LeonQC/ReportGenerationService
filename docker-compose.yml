@@ -28,6 +28,14 @@ services:
     networks:
       - microservices-net
 
+  redis:
+    image: redis:7
+    container_name: redisdo
+    ports:
+      - "6379:6379"
+    networks:
+      - microservices-net
+
 networks:
   microservices-net:
 
