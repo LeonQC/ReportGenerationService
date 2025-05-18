@@ -8,11 +8,12 @@ export const createReportHandler = async (
   reply: FastifyReply
 ) => {
   try {
-    const pdfBuffer = await createReport(request.server.prisma, request.body);
-    return reply
-      .header("Content-type", "application/pdf")
-      .header("Content-Disposition", 'attachment; filename="report.pdf" ')
-      .send(pdfBuffer);
+    const result = await createReport(
+      request.server.prisma,
+      request.body,
+      request.server.redis
+    );
+    return reply.status(201).send(result);
   } catch (err) {
     request.log.error(err);
 

@@ -1,8 +1,11 @@
 import { PrismaClient, ReportStatus } from "@prisma/client";
-import axios from "axios";
+import type { Redis } from "ioredis";
 import { v4 as uuidv4 } from "uuid";
 import { CreateReportInput } from "../schemas/reportSchemas";
 import { generateStockOverviewPDF } from "../utils/pdfGenerator";
+import { uploadReportToS3 } from "./s3UploadService";
+import { AppError } from "../utils/appError";
+import { getStockOverview } from "./alphaVantageService";
 
 export const getReports = async (prisma: PrismaClient) => {
   return prisma.reportRequest.findMany({
@@ -14,7 +17,8 @@ export const getReports = async (prisma: PrismaClient) => {
 
 export const createReport = async (
   prisma: PrismaClient,
-  input: CreateReportInput
+  input: CreateReportInput,
+  redis: Redis
 ) => {
   const reportId = uuidv4();
 
@@ -31,24 +35,23 @@ export const createReport = async (
   });
 
   try {
-    const apiKey = process.env.ALPHA_VANTAGE_COMPANY_OVERVIEW!;
-    const response = await axios.get("https://www.alphavantage.co/query", {
-      params: {
-        function: "OVERVIEW",
-        symbol: "TSLA", // TODO: support dynamic symbol later
-        apikey: apiKey,
-      },
-    });
+    const stockData = await getStockOverview("TSLA", redis);
+    const pdfReport = await generateStockOverviewPDF(stockData);
+    const fileUrl = await uploadReportToS3(pdfReport, reportId);
 
-    await generateStockOverviewPDF(response.data);
-    const outputUrl = `https://example.com/reports/${reportId}.pdf`; // TODO: replace with s3 URL later
-    return await prisma.reportRequest.update({
+    await prisma.reportRequest.update({
       where: { id: reportId },
       data: {
         status: ReportStatus.READY,
-        outputUrl,
+        outputUrl: fileUrl,
       },
     });
+
+    console.info("Report generated successfully", {
+      reportId,
+    });
+
+    return { id: reportId, status: ReportStatus.READY };
   } catch (err) {
     await prisma.reportRequest.update({
       where: { id: reportId },
@@ -57,6 +60,9 @@ export const createReport = async (
         errorMessage: (err as Error).message,
       },
     });
+    if (!(err instanceof AppError)) {
+      throw new AppError("Report generation failed unexpectedly", 500);
+    }
     throw err;
   }
 };
