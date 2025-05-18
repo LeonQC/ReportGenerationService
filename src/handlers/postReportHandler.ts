@@ -1,4 +1,4 @@
-import { createReport } from "./../services/reportService";
+import { createReport } from "../services/report";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { AppError } from "../utils/appError";
 import { CreateReportInput } from "../schemas/reportSchemas";

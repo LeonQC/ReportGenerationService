@@ -1,19 +1,11 @@
 import { PrismaClient, ReportStatus } from "@prisma/client";
 import type { Redis } from "ioredis";
 import { v4 as uuidv4 } from "uuid";
-import { CreateReportInput } from "../schemas/reportSchemas";
-import { generateStockOverviewPDF } from "../utils/pdfGenerator";
-import { uploadReportToS3 } from "./s3UploadService";
-import { AppError } from "../utils/appError";
-import { getStockOverview } from "./alphaVantageService";
-
-export const getReports = async (prisma: PrismaClient) => {
-  return prisma.reportRequest.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-};
+import { CreateReportInput } from "../../schemas/reportSchemas";
+import { generateStockOverviewPDF } from "../../utils/pdfGenerator";
+import { uploadReportToS3 } from "../../integrations/s3UploadService";
+import { AppError } from "../../utils/appError";
+import { getStockOverview } from "../../integrations/alphaVantageService";
 
 export const createReport = async (
   prisma: PrismaClient,
