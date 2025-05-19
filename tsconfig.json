@@ -12,11 +12,6 @@
     "rootDir": ".",
     "types": ["node"]
   },
-  "include": [
-    "src",
-    "prisma/seed.ts",
-    "src/types",
-    "src/handlers/getReportsHandler.ts"
-  ],
+  "include": ["src", "prisma/seed.ts"],
   "exclude": ["node_modules", "dist"]
 }

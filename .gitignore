@@ -15,7 +15,8 @@
 **/prisma/.env
 *.db
 # Local Prisma clients (per-service)
-apps/*/generated/
+prisma/@prisma/
+prisma/generated/
 
 # Logs
 logs/
