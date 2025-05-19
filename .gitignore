@@ -17,7 +17,7 @@
 # Local Prisma clients (per-service)
 prisma/@prisma/
 prisma/generated/
-
+**/@prisma/
 # Logs
 logs/
 *.log
