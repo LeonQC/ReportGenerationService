@@ -15,8 +15,9 @@
 **/prisma/.env
 *.db
 # Local Prisma clients (per-service)
-apps/*/generated/
-
+prisma/@prisma/
+prisma/generated/
+**/@prisma/
 # Logs
 logs/
 *.log
@@ -33,3 +34,9 @@ docker-compose.override.yml
 
 # Lockfiles (ignore only in workspaces)
 apps/*/pnpm-lock.yaml
+
+node_modules/
+dist/
+generated/
+*.log
+.env
