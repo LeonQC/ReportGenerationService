@@ -15,7 +15,8 @@ model ReportRequest {
   mimeType      MimeType // e.g., "application/pdf", "text/csv"
   customRequest String? // optional free-form user input
   status        ReportStatus @default(PENDING)
-  outputUrl     String? // file location (e.g., S3 or CDN)
+  s3Url         String? 
+  s3Key         String? 
   errorMessage  String? // if generation fails
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt

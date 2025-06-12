@@ -6,7 +6,7 @@ import { ReportOverview } from "../types/alphavantage";
 
 const API_KEY = process.env.ALPHA_VANTAGE_COMPANY_OVERVIEW!;
 const BASE_URL = "https://www.alphavantage.co/query";
-const DEFAULT_TTL = 60 * 60 * 24;
+const DEFAULT_TTL = 60 * 60;
 
 export const getStockOverview = async (
   symbol: string,

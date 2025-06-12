@@ -9,11 +9,16 @@ const reportBase = {
   timeRange: z.string(),
   mimeType: z.string(),
   status: z.string(),
-  outputUrl: z.string().nullable().optional(),
   errorMessage: z.string().nullable().optional(),
   customRequest: z.string().nullable().optional(),
-  createdAt: z.string(), // ISO string
+  createdAt: z.string(),
   updatedAt: z.string(),
+};
+
+const internalReportBase = {
+  ...reportBase,
+  s3Url: z.string().nullable().optional(),
+  s3Key: z.string().nullable().optional(),
 };
 
 const createReportSchema = z.object({
@@ -26,21 +31,37 @@ const createReportSchema = z.object({
     .default("APPLICATION_PDF"),
 });
 
+export const downloadReportParamsSchema = z.object({
+  id: z.string().uuid(),
+});
+
 export const createReportResponseSchema = z.object({
   id: z.string(),
   status: z.enum(["PENDING", "PROCESSING", "READY", "FAILED"]),
 });
+
+// Public schemas (for API responses)
 export const reportResponseSchema = z.object(reportBase);
 export const reportsResponseSchema = z.array(reportResponseSchema);
 
+// Internal schemas (for server-side operations)
+export const internalReportResponseSchema = z.object(internalReportBase);
+export const internalReportsResponseSchema = z.array(
+  internalReportResponseSchema
+);
+
 export type CreateReportInput = z.infer<typeof createReportSchema>;
 export type ReportResponse = z.infer<typeof reportResponseSchema>;
+export type InternalReportResponse = z.infer<
+  typeof internalReportResponseSchema
+>;
 export type GetReportsResponse = z.infer<typeof reportsResponseSchema>;
+export type DownloadReportParams = z.infer<typeof downloadReportParamsSchema>;
 
-// Generate Fastify-compatible schemas
 export const { schemas: reportSchemas, $ref } = buildJsonSchemas({
   reportResponseSchema,
   reportsResponseSchema,
   createReportSchema,
   createReportResponseSchema,
+  downloadReportParamsSchema,
 });
