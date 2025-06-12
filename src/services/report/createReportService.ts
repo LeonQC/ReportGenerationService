@@ -6,6 +6,8 @@ import { generateStockOverviewPDF } from "../../utils/pdfGenerator";
 import { uploadReportToS3 } from "../../integrations/s3UploadService";
 import { AppError } from "../../utils/appError";
 import { getStockOverview } from "../../integrations/alphaVantageService";
+import { generateCSVBuffer } from "../../utils/csvGenerator";
+import { generateJsonBuffer } from "../../utils/jsonGenerator";
 
 export const createReport = async (
   prisma: PrismaClient,
@@ -35,12 +37,12 @@ export const createReport = async (
       case MimeType.APPLICATION_PDF:
         reportData = await generateStockOverviewPDF(stockData);
         break;
-      // case MimeType.TEXT_CSV:
-      //   reportData = generateDummyCSV();
-      //   break;
-      // case MimeType.APPLICATION_JSON:
-      //   reportData = generateDummyJSON();
-      //   break;
+      case MimeType.TEXT_CSV:
+        reportData = await generateCSVBuffer(stockData);
+        break;
+      case MimeType.APPLICATION_JSON:
+        reportData = await generateJsonBuffer(stockData);
+        break;
       default:
         throw new AppError(`Unsupported MIME type: ${input.mimeType}`, 400);
     }
