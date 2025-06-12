@@ -1,4 +1,4 @@
-import { PrismaClient, ReportStatus } from "@prisma/client";
+import { MimeType, PrismaClient, ReportStatus } from "@prisma/client";
 import type { Redis } from "ioredis";
 import { v4 as uuidv4 } from "uuid";
 import { CreateReportInput } from "../../schemas/reportSchemas";
@@ -27,15 +27,36 @@ export const createReport = async (
   });
 
   try {
+    // Fetch stock data based on report type
     const stockData = await getStockOverview("TSLA", redis);
-    const pdfReport = await generateStockOverviewPDF(stockData);
-    const fileUrl = await uploadReportToS3(pdfReport, reportId);
+
+    let reportData: Buffer;
+    switch (input.mimeType) {
+      case MimeType.APPLICATION_PDF:
+        reportData = await generateStockOverviewPDF(stockData);
+        break;
+      // case MimeType.TEXT_CSV:
+      //   reportData = generateDummyCSV();
+      //   break;
+      // case MimeType.APPLICATION_JSON:
+      //   reportData = generateDummyJSON();
+      //   break;
+      default:
+        throw new AppError(`Unsupported MIME type: ${input.mimeType}`, 400);
+    }
+    // Upload the report to S3
+    const { s3Key, s3Url } = await uploadReportToS3(
+      reportData,
+      reportId,
+      input.mimeType
+    );
 
     await prisma.reportRequest.update({
       where: { id: reportId },
       data: {
         status: ReportStatus.READY,
-        outputUrl: fileUrl,
+        s3Key: s3Key,
+        s3Url: s3Url,
       },
     });
 
