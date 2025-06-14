@@ -18,6 +18,8 @@
     "@aws-sdk/s3-request-presigner": "^3.812.0",
     "@prisma/client": "^6.7.0",
     "axios": "^1.9.0",
+    "csv": "^6.3.11",
+    "csv-stringify": "^6.5.2",
     "dotenv": "^16.5.0",
     "fastify": "^4.25.1",
     "fastify-plugin": "^5.0.1",
@@ -29,6 +31,7 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@types/csv-stringify": "^3.1.3",
     "@types/node": "^22.15.17",
     "@types/pdfkit": "^0.13.9",
     "prisma": "^6.7.0",
