@@ -9,15 +9,16 @@ datasource db {
 
 model ReportRequest {
   id            String       @id @default(uuid())
-  userId        String // passed from Auth service or Gateway
-  reportType    ReportType // e.g., "stock_summary", "macro_trends"
-  timeRange     TimeRange // e.g., "today", "last_7_days"
-  mimeType      MimeType // e.g., "application/pdf", "text/csv"
-  customRequest String? // optional free-form user input
+  userId        String
+  reportName    String?
+  reportType    ReportType
+  timeRange     TimeRange
+  mimeType      MimeType
+  customRequest String?
   status        ReportStatus @default(PENDING)
-  s3Url         String? 
-  s3Key         String? 
-  errorMessage  String? // if generation fails
+  s3Url         String?
+  s3Key         String?
+  errorMessage  String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 

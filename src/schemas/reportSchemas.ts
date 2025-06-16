@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { buildJsonSchemas } from "fastify-zod";
+import { report } from "process";
 
 // Shared field structure
 const reportBase = {
   id: z.string(),
   userId: z.string(),
+  reportName: z.string().nullable().optional(),
   reportType: z.string(),
   timeRange: z.string(),
   mimeType: z.string(),
@@ -24,6 +26,7 @@ const internalReportBase = {
 const createReportSchema = z.object({
   userId: z.string().uuid(),
   reportType: z.enum(["STOCK_SUMMARY", "MACRO_TRENDS", "CUSTOM"]),
+  reportName: z.string().min(1).max(100).optional(),
   timeRange: z.enum(["TODAY", "LAST_7_DAYS", "LAST_30_DAYS"]),
   customRequest: z.string().optional(),
   mimeType: z

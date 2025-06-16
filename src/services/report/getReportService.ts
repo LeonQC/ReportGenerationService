@@ -5,7 +5,7 @@ import { serializeReport } from "../../serializers/reportSerializer";
 import { GetReportsResponse } from "../../schemas/reportSchemas";
 
 const CACHE_KEY = "reports:all";
-const TTL = 5;
+const TTL = 60 * 60 * 24;
 
 export const getReports = async (
   prisma: PrismaClient,

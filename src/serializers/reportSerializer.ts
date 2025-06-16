@@ -1,5 +1,6 @@
 import { ReportRequest } from "@prisma/client";
 import { InternalReportResponse } from "../schemas/reportSchemas";
+import { convertUTCToLocal } from "../utils/helpers";
 
 export const serializeReport = (r: ReportRequest) => ({
   ...r,
@@ -7,8 +8,8 @@ export const serializeReport = (r: ReportRequest) => ({
   timeRange: r.timeRange.toString(),
   mimeType: r.mimeType.toString(),
   status: r.status.toString(),
-  createdAt: r.createdAt.toISOString(),
-  updatedAt: r.updatedAt.toISOString(),
+  createdAt: convertUTCToLocal(r.createdAt.toISOString()),
+  updatedAt: convertUTCToLocal(r.updatedAt.toISOString()),
 });
 
 export const serializeReportInternal = (
