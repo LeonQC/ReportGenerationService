@@ -13,7 +13,8 @@ import { generateFallBackFileName } from "../../utils/helpers";
 export const createReport = async (
   prisma: PrismaClient,
   input: CreateReportInput,
-  redis: Redis
+  redis: Redis,
+  userId: string
 ) => {
   const reportId = uuidv4();
 
@@ -23,7 +24,7 @@ export const createReport = async (
   await prisma.reportRequest.create({
     data: {
       id: reportId,
-      userId: input.userId,
+      userId: userId,
       reportName: reportName,
       reportType: input.reportType,
       timeRange: input.timeRange,

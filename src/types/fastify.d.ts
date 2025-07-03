@@ -7,4 +7,11 @@ declare module "fastify" {
     prisma: PrismaClient;
     redis: Redis;
   }
+  interface FastifyRequest {
+    user?: {
+      userId: string;
+      email: string;
+      name: string;
+    };
+  }
 }

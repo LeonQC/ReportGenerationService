@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { buildJsonSchemas } from "fastify-zod";
-import { report } from "process";
 
 // Shared field structure
 const reportBase = {
@@ -24,7 +23,6 @@ const internalReportBase = {
 };
 
 const createReportSchema = z.object({
-  userId: z.string().uuid(),
   reportType: z.enum(["STOCK_SUMMARY", "MACRO_TRENDS", "CUSTOM"]),
   reportName: z.string().min(1).max(100).optional(),
   timeRange: z.enum(["TODAY", "LAST_7_DAYS", "LAST_30_DAYS"]),
@@ -32,6 +30,10 @@ const createReportSchema = z.object({
   mimeType: z
     .enum(["APPLICATION_PDF", "TEXT_CSV", "APPLICATION_JSON"])
     .default("APPLICATION_PDF"),
+});
+
+const errorResponseSchema = z.object({
+  error: z.string(),
 });
 
 export const downloadReportParamsSchema = z.object({
@@ -61,10 +63,16 @@ export type InternalReportResponse = z.infer<
 export type GetReportsResponse = z.infer<typeof reportsResponseSchema>;
 export type DownloadReportParams = z.infer<typeof downloadReportParamsSchema>;
 
-export const { schemas: reportSchemas, $ref } = buildJsonSchemas({
-  reportResponseSchema,
-  reportsResponseSchema,
-  createReportSchema,
-  createReportResponseSchema,
-  downloadReportParamsSchema,
-});
+export const { schemas: reportSchemas, $ref } = buildJsonSchemas(
+  {
+    reportResponseSchema,
+    reportsResponseSchema,
+    createReportSchema,
+    createReportResponseSchema,
+    downloadReportParamsSchema,
+    errorResponseSchema,
+  },
+  {
+    $id: "reportSchemas",
+  }
+);
