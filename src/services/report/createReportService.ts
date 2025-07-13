@@ -8,18 +8,24 @@ import { AppError } from "../../utils/appError";
 import { getStockOverview } from "../../integrations/alphaVantageService";
 import { generateCSVBuffer } from "../../utils/csvGenerator";
 import { generateJsonBuffer } from "../../utils/jsonGenerator";
+import { generateFallBackFileName } from "../../utils/helpers";
 
 export const createReport = async (
   prisma: PrismaClient,
   input: CreateReportInput,
-  redis: Redis
+  redis: Redis,
+  userId: string
 ) => {
   const reportId = uuidv4();
+
+  const reportName =
+    input.reportName || generateFallBackFileName(input.reportType);
 
   await prisma.reportRequest.create({
     data: {
       id: reportId,
-      userId: input.userId,
+      userId: userId,
+      reportName: reportName,
       reportType: input.reportType,
       timeRange: input.timeRange,
       mimeType: input.mimeType,

@@ -8,10 +8,16 @@ export const createReportHandler = async (
   reply: FastifyReply
 ) => {
   try {
+    const userId = request.user?.userId;
+    if (!userId) {
+      return reply.code(401).send({ error: "Not authenticated" });
+    }
+
     const result = await createReport(
       request.server.prisma,
-      request.body,
-      request.server.redis
+      request.body, // ✨ Just the body (no userId)
+      request.server.redis,
+      userId
     );
     return reply.status(201).send(result);
   } catch (err) {

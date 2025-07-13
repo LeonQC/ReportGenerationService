@@ -3,34 +3,10 @@ import { AppError } from "../utils/appError";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 
 import { getDownloadReport } from "../services/report/getDownloadReportService";
-import { DownloadReportParams } from "src/schemas/reportSchemas";
+import { DownloadReportParams } from "../schemas/reportSchemas";
 import { s3 } from "../integrations/s3UploadService";
 
-function getFileExtension(mimeType: string): string {
-  switch (mimeType) {
-    case "APPLICATION_PDF":
-      return "pdf";
-    case "TEXT_CSV":
-      return "csv";
-    case "APPLICATION_JSON":
-      return "json";
-    default:
-      return "bin";
-  }
-}
-
-function getMimeTypeString(mimeType: string): string {
-  switch (mimeType) {
-    case "APPLICATION_PDF":
-      return "application/pdf";
-    case "TEXT_CSV":
-      return "text/csv";
-    case "APPLICATION_JSON":
-      return "application/json";
-    default:
-      return "application/octet-stream";
-  }
-}
+import { getFileExtension, getMimeTypeString } from "../utils/helpers";
 
 export const getDownloadReportHandler = async (
   request: FastifyRequest<{ Params: DownloadReportParams }>,
@@ -39,12 +15,17 @@ export const getDownloadReportHandler = async (
   const { id } = request.params;
 
   try {
+    const requestUserId = request.user?.userId;
+    if (!requestUserId) {
+      return reply.code(401).send({ error: "Not authenticated" });
+    }
+
     const report = await getDownloadReport(request.server.prisma, id);
 
-    // TODO: Add authorization check when you have user context
-    // if (report.userId !== request.user?.id) {
-    //   throw new AppError("Unauthorized to download this report", 403);
-    // }
+    if (report.userId !== requestUserId) {
+      throw new AppError("Unauthorized to download this report", 403);
+    }
+
     if (!report.s3Key) {
       throw new AppError("Report file is not yet available", 400);
     }
@@ -59,10 +40,11 @@ export const getDownloadReportHandler = async (
       throw new AppError("File not found in storage", 404);
     }
 
-    const filename = `report-${report.id}.${getFileExtension(report.mimeType)}`;
-
     reply.header("Content-Type", getMimeTypeString(report.mimeType));
-    reply.header("Content-Disposition", `attachment; filename="${filename}"`);
+    reply.header(
+      "Content-Disposition",
+      `attachment; filename="${report.reportName}"`
+    );
 
     if (s3Response.ContentLength) {
       reply.header("Content-Length", s3Response.ContentLength);
